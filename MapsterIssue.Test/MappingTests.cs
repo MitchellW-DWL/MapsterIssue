@@ -44,6 +44,26 @@ public class MappingTests
         childModelA.ChildPropertyA.Should().Be(childEntityA.ChildPropertyA);
     }
 
+    [Fact]
+    public void Map_ChildEntityB_To_ChildModelB()
+    {
+        var config = GetMappingConfig();
+        var mapper = new Mapper(config);
+        var childEntityB = new ChildEntityB()
+        {
+            Id = 8008135,
+            Guid = Guid.NewGuid(),
+            ChildPropertyB = -1,
+        };
+
+        var result = MapEntityToModel(mapper, childEntityB);
+        result.Should().BeOfType<ChildModelB>();
+
+        var childModelB = (ChildModelB)result;
+        childModelB.Id.Should().Be(childEntityB.Guid);
+        childModelB.ChildPropertyB.Should().Be(childEntityB.ChildPropertyB);
+    }
+
     private static List<ParentModel> MapEntityListToModelList(Mapper mapper, List<ParentEntity> parentEntities)
         => mapper.Map<List<ParentModel>>(parentEntities);
     
@@ -72,5 +92,31 @@ public class MappingTests
         
         childModelA.Id.Should().Be(childEntityA.Guid);
         childModelA.ChildPropertyA.Should().Be(childEntityA.ChildPropertyA);
+    }
+
+    [Fact]
+    public void Map_List_ChildEntityB_To_List_ChildModelB()
+    {
+        var config = GetMappingConfig();
+        var mapper = new Mapper(config);
+
+        var childEntityB = new ChildEntityB()
+        {
+            Id = 90,
+            Guid = Guid.NewGuid(),
+            ChildPropertyB = -7,
+        };
+        var childEntityBList = new List<ParentEntity>()
+            { childEntityB };
+
+        var results = MapEntityListToModelList(mapper, childEntityBList);
+        results.Should().HaveCount(1);
+        
+        var result = results.Single();
+        result.Should().BeOfType<ChildModelB>();
+
+        var childModelB = (ChildModelB)result;
+        childModelB.Id.Should().Be(childEntityB.Guid);
+        childModelB.ChildPropertyB.Should().Be(childEntityB.ChildPropertyB);
     }
 }
